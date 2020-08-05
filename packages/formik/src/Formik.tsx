@@ -904,14 +904,19 @@ export function useFormik<Values extends FormikValues = FormikValues>({
   const getFieldProps = React.useCallback(
     (nameOrOptions): FieldInputProps<any> => {
       const isAnObject = isObject(nameOrOptions);
-      const name = isAnObject ? nameOrOptions.name : nameOrOptions;
+      const name: string = isAnObject ? nameOrOptions.name : nameOrOptions;
       const valueState = getIn(state.values, name);
+      // Use curried version of field
+      const onChange = handleChange(name) as (
+        eventOrString: string | React.ChangeEvent<any>
+      ) => void;
+      const onBlur = handleBlur(name) as (event: any) => void;
 
       const field: FieldInputProps<any> = {
         name,
         value: valueState,
-        onChange: handleChange,
-        onBlur: handleBlur,
+        onChange,
+        onBlur,
       };
       if (isAnObject) {
         const {
